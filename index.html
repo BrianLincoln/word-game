@@ -206,7 +206,8 @@
 
     const render = () => {
       el.textContent = order[index];
-      counter.textContent = 'word ' + (index + 1);
+      const dotTotal = Math.min(order.length, 10);
+      counter.textContent = 'word ' + ((index % dotTotal) + 1) + ' of ' + dotTotal;
       el.classList.remove('leaving');
       el.classList.add('entering');
       requestAnimationFrame(() => {
