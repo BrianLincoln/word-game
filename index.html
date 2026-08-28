@@ -117,6 +117,78 @@
 
   .dot.filled { background: var(--accent); }
 
+  .settings-btn {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    width: 34px;
+    height: 34px;
+    border: none;
+    background: transparent;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--sub);
+    opacity: 0.35;
+    transition: opacity 0.15s ease, background 0.15s ease;
+  }
+
+  .settings-btn:hover,
+  .settings-btn:focus-visible {
+    opacity: 1;
+    background: var(--accent-soft);
+  }
+
+  .settings-btn svg { width: 18px; height: 18px; }
+
+  .settings-panel {
+    position: fixed;
+    top: 54px;
+    right: 16px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(46, 42, 34, 0.1);
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    min-width: 180px;
+    z-index: 10;
+  }
+
+  .settings-panel[hidden] { display: none; }
+
+  .settings-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--sub);
+    font-weight: 700;
+    padding: 6px 12px 4px;
+  }
+
+  .settings-option {
+    text-align: left;
+    border: none;
+    background: transparent;
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    color: var(--ink);
+    padding: 10px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+
+  .settings-option:hover { background: var(--accent-soft); }
+
+  .settings-option.active {
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-weight: 700;
+  }
+
   @media (max-width: 420px) {
     .word { font-size: 48px; }
     .card { padding: 48px 20px; min-height: 180px; }
@@ -134,35 +206,64 @@
   <div class="dot-row" id="dots"></div>
 </div>
 
+<button class="settings-btn" id="settingsBtn" aria-label="Word difficulty settings" aria-expanded="false" aria-haspopup="true">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="3"></circle>
+    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+  </svg>
+</button>
+<div class="settings-panel" id="settingsPanel" hidden>
+  <div class="settings-title">Word difficulty</div>
+  <button class="settings-option" data-level="all">All words</button>
+  <button class="settings-option" data-level="basics">Just the basics</button>
+  <button class="settings-option" data-level="challenge">Bonus challenge</button>
+</div>
+
 <script>
   const words = [
-    "ant", "apple", "arm",
-    "bat", "box", "bed",
-    "cat", "cup", "cow",
-    "dog", "duck", "dad",
-    "egg", "elf", "eat",
-    "fish", "frog", "fox",
-    "goat", "gum", "garden",
-    "hat", "hen", "house",
-    "ice", "igloo", "insect",
-    "jam", "jet", "jump",
-    "kite", "king", "kick",
-    "leg", "lion", "lamp",
-    "map", "milk", "moon",
-    "nut", "nest", "net",
-    "owl", "ox", "otter",
-    "pig", "pen", "plant",
-    "queen", "quilt", "quack",
-    "rat", "run", "rain",
-    "sun", "star", "six",
-    "top", "tree", "ten",
-    "up", "umbrella", "under",
-    "van", "vase", "vet",
-    "wet", "web", "wag",
-    "x-ray",
-    "yes", "yo-yo", "yarn",
-    "zoo", "zip", "zebra"
+    { word: "ant", level: 1 }, { word: "apple", level: 1 }, { word: "arm", level: 2 },
+    { word: "bat", level: 1 }, { word: "box", level: 1 }, { word: "bed", level: 1 },
+    { word: "cat", level: 1 }, { word: "cup", level: 1 }, { word: "cow", level: 2 },
+    { word: "dog", level: 1 }, { word: "duck", level: 1 }, { word: "dad", level: 1 },
+    { word: "egg", level: 1 }, { word: "elf", level: 1 }, { word: "eat", level: 2 },
+    { word: "fish", level: 1 }, { word: "frog", level: 1 }, { word: "fox", level: 1 },
+    { word: "goat", level: 2 }, { word: "gum", level: 1 }, { word: "garden", level: 2 },
+    { word: "hat", level: 1 }, { word: "hen", level: 1 }, { word: "house", level: 2 },
+    { word: "ice", level: 2 }, { word: "igloo", level: 2 }, { word: "insect", level: 1 },
+    { word: "jam", level: 1 }, { word: "jet", level: 1 }, { word: "jump", level: 1 },
+    { word: "kite", level: 2 }, { word: "king", level: 1 }, { word: "kick", level: 1 },
+    { word: "leg", level: 1 }, { word: "lion", level: 2 }, { word: "lamp", level: 1 },
+    { word: "map", level: 1 }, { word: "milk", level: 1 }, { word: "moon", level: 2 },
+    { word: "nut", level: 1 }, { word: "nest", level: 1 }, { word: "net", level: 1 },
+    { word: "owl", level: 2 }, { word: "ox", level: 1 }, { word: "otter", level: 2 },
+    { word: "pig", level: 1 }, { word: "pen", level: 1 }, { word: "plant", level: 1 },
+    { word: "queen", level: 2 }, { word: "quilt", level: 1 }, { word: "quack", level: 1 },
+    { word: "rat", level: 1 }, { word: "run", level: 1 }, { word: "rain", level: 2 },
+    { word: "sun", level: 1 }, { word: "star", level: 2 }, { word: "six", level: 1 },
+    { word: "top", level: 1 }, { word: "tree", level: 2 }, { word: "ten", level: 1 },
+    { word: "up", level: 1 }, { word: "umbrella", level: 2 }, { word: "under", level: 2 },
+    { word: "van", level: 1 }, { word: "vase", level: 2 }, { word: "vet", level: 1 },
+    { word: "wet", level: 1 }, { word: "web", level: 1 }, { word: "wag", level: 1 },
+    { word: "x-ray", level: 2 },
+    { word: "yes", level: 1 }, { word: "yo-yo", level: 2 }, { word: "yarn", level: 2 },
+    { word: "zoo", level: 2 }, { word: "zip", level: 1 }, { word: "zebra", level: 2 }
   ];
+
+  const DIFFICULTY_FILTERS = {
+    all: () => true,
+    basics: (w) => w.level === 1,
+    challenge: (w) => w.level === 2
+  };
+
+  let difficulty = 'all';
+  try {
+    const saved = localStorage.getItem('wordGameDifficulty');
+    if (saved && DIFFICULTY_FILTERS[saved]) difficulty = saved;
+  } catch (e) {}
+
+  function getPool() {
+    return words.filter(DIFFICULTY_FILTERS[difficulty]).map((w) => w.word);
+  }
 
   let order = [];
   let index = 0;
@@ -198,7 +299,7 @@
 
   function showWord(animate) {
     if (index >= order.length) {
-      order = shuffle(words);
+      order = shuffle(getPool());
       index = 0;
     }
     const el = document.getElementById('word');
@@ -229,7 +330,54 @@
     showWord(true);
   });
 
-  order = shuffle(words);
+  const settingsBtn = document.getElementById('settingsBtn');
+  const settingsPanel = document.getElementById('settingsPanel');
+
+  function updateSettingsUI() {
+    settingsPanel.querySelectorAll('.settings-option').forEach((btn) => {
+      btn.classList.toggle('active', btn.dataset.level === difficulty);
+    });
+  }
+
+  function closeSettings() {
+    settingsPanel.setAttribute('hidden', '');
+    settingsBtn.setAttribute('aria-expanded', 'false');
+  }
+
+  settingsBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isHidden = settingsPanel.hasAttribute('hidden');
+    if (isHidden) {
+      settingsPanel.removeAttribute('hidden');
+      settingsBtn.setAttribute('aria-expanded', 'true');
+    } else {
+      closeSettings();
+    }
+  });
+
+  settingsPanel.querySelectorAll('.settings-option').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      if (btn.dataset.level !== difficulty) {
+        difficulty = btn.dataset.level;
+        try { localStorage.setItem('wordGameDifficulty', difficulty); } catch (e) {}
+        order = shuffle(getPool());
+        index = 0;
+        buildDots();
+        showWord(false);
+        updateSettingsUI();
+      }
+      closeSettings();
+    });
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!settingsPanel.hasAttribute('hidden') && !settingsPanel.contains(e.target) && e.target !== settingsBtn) {
+      closeSettings();
+    }
+  });
+
+  updateSettingsUI();
+  order = shuffle(getPool());
   buildDots();
   showWord(false);
 </script>
